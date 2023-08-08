@@ -6,8 +6,8 @@ Map<String, List<Map<String, String>>> rawFramerateData = {
       "resolution": "3.8K",
       "aspect ratio": "16:9",
       "size": "22.8X12.8",
-      "project frame rates": "23,24,25,29,50,59",
-      "fps": "1-60,66, 72, 75, 88,90,96, 100,110"
+      "project frame rates": "23, 24, 25, 29, 50, 59",
+      "fps": "1-60, 66, 72, 75, 88, 90, 96, 100, 110"
     },
     {
       "resolution": "3.8K",
@@ -20,77 +20,77 @@ Map<String, List<Map<String, String>>> rawFramerateData = {
       "resolution": "4K",
       "aspect ratio": "2.39:1",
       "size": "24.3X10.3",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1-60, 66,72,75,88,90,96,100,110, 120"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72, 75, 88, 90, 96, 100, 110, 120"
     },
     {
       "resolution": "4K",
       "aspect ratio": "17:9",
       "size": "24.3X12.8",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1-60,66, 72, 75, 88,90,96, 100,110"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72, 75, 88, 90, 96, 100, 110"
     },
     {
       "resolution": "4K",
       "aspect ratio": "17:9 Surround View",
       "size": "24.3X12.8",
-      "project frame rates": "23,24, 25, 29",
+      "project frame rates": "23, 24, 25, 29",
       "fps": "1-48"
     },
     {
       "resolution": "4K",
       "aspect ratio": "4:3",
       "size": "24.3X18.0",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1- 60,66, 72, 75"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72, 75"
     },
     {
       "resolution": "4K",
       "aspect ratio": "4:3 Surround View",
       "size": "24.3X18.0",
-      "project frame rates": "23,24, 25, 29",
+      "project frame rates": "23, 24, 25, 29",
       "fps": "1-30"
     },
     {
       "resolution": "4K",
       "aspect ratio": "6:5",
       "size": "24.3X20.4",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1-60,66,72"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72"
     },
     {
       "resolution": "5.7K",
       "aspect ratio": "16:9",
       "size": "33.7X19.0",
       "project frame rates": "23,24,25,29,50,59",
-      "fps": "1-60,66,72"
+      "fps": "1-60, 66, 72"
     },
     {
       "resolution": "6K",
       "aspect ratio": "2.39:1",
       "size": "35.9X15.0",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1- 60,66,72, 75,88, 90"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72, 75, 88, 90"
     },
     {
       "resolution": "6K",
       "aspect ratio": "17:9",
       "size": "36.0X19.0",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1-60,66,72"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72"
     },
     {
       "resolution": "6K",
       "aspect ratio": "1.85:1",
       "size": "36.0X19.4",
-      "project frame rates": "23,24,25,29,47,50,59",
-      "fps": "1-60,66,72"
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
+      "fps": "1-60, 66, 72"
     },
     {
       "resolution": "6K",
       "aspect ratio": "3:2",
       "size": "35.9X24.0",
-      "project frame rates": "23,24,25,29,47,50,59",
+      "project frame rates": "23, 24, 25, 29, 47, 50, 59",
       "fps": "1-60"
     }
   ],
@@ -100,77 +100,77 @@ Map<String, List<Map<String, String>>> rawFramerateData = {
       "aspect ratio": "16:9",
       "size": "22.6X12.7",
       "project frame rates": "23, 24, 25, 29, 50, 59",
-      "fps": "60, 66, 72, 75"
+      "fps": "1-60, 66, 72, 75"
     },
     {
       "resolution": "5.5K",
       "aspect ratio": "2.39:1",
       "size": "22.8X9.55",
-      "project frame rates": "23, 24, 25, 29, 4 50, 59",
-      "fps": "60, 66, 72, 75"
+      "project frame rates": "23, 24, 25, 29, 50, 59",
+      "fps": "1-60, 66, 72, 75"
     },
     {
       "resolution": "5.8K",
       "aspect ratio": "17:9",
       "size": "24.1X12.7",
       "project frame rates": "23, 24, 25, 29, 50, 59",
-      "fps": "60, 66, 72, 75"
+      "fps": "1-60, 66, 72, 75"
     },
     {
       "resolution": "5.8K",
       "aspect ratio": "4:3",
       "size": "24.1X17.8",
       "project frame rates": "23, 24, 25, 29, 47, 50, 59",
-      "fps": "60"
+      "fps": "1-60"
     },
     {
       "resolution": "5.8K",
       "aspect ratio": "6:5",
       "size": "24.1X20.2",
       "project frame rates": "23, 24, 25, 29",
-      "fps": "48"
+      "fps": "1-48"
     },
     {
       "resolution": "7.6K",
       "aspect ratio": "16:9",
       "size": "32.0X18.0",
       "project frame rates": "23, 24, 25, 29, 50, 59",
-      "fps": "1*-60"
+      "fps": "1-60"
     },
     {
       "resolution": "8.1K",
       "aspect ratio": "16:9",
       "size": "33.8X19.0",
       "project frame rates": "23, 24, 25, 29, 47, 50, 59",
-      "fps": "1*-48"
+      "fps": "1-48"
     },
     {
       "resolution": "8.2K",
       "aspect ratio": "17:9",
       "size": "34.1X18.0",
       "project frame rates": "23, 24, 25, 29, 50, 59",
-      "fps": "1*-60"
+      "fps": "1-60"
     },
     {
       "resolution": "8.2K",
       "aspect ratio": "2.39:1",
       "size": "34.1X14.3",
       "project frame rates": "23, 24, 25, 29, 47, 50, 59",
-      "fps": "1*-60, 66, 72"
+      "fps": "1-60, 66, 72"
     },
     {
       "resolution": "8.6K",
       "aspect ratio": "17:9",
       "size": "35.9X19.0",
       "project frame rates": "23, 24, 25, 29, 47",
-      "fps": "1*-48"
+      "fps": "1-48"
     },
     {
       "resolution": "8.6K",
       "aspect ratio": "3:2",
       "size": "35.9X24.0",
       "project frame rates": "23, 24, 25, 29",
-      "fps": "1*-30"
+      "fps": "1-30"
     }
   ]
 };
@@ -404,8 +404,8 @@ Map<String, List<Map<String, String>>> rawDatarates = {
       "8.6K3:2": "797",
       "8.1K16:9": "797",
       "7.6K16:9": "797",
-      "5.8K6:5": "797*",
-      "5.8K4:3": "797*",
+      "5.8K6:5": "797",
+      "5.8K4:3": "797",
       "5.4K16:9": "797"
     }
   ]

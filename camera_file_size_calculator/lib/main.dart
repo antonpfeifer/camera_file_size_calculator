@@ -37,26 +37,48 @@ class Camera {
   late String name;
   late String id;
   late List<Resolution> resolutions;
-  late List<Profile> profiles;
+  late List<Codec> codecs;
   late List<Media> supportedMedia;
   Camera({
     required this.name,
     required this.id,
     required this.resolutions,
-    required this.profiles,
+    required this.codecs,
     required this.supportedMedia,
   });
   Camera.fromJson(String identifier) {
     List<Map<String, String>>? rawProfiles = rawDatarates[identifier];
     final rawResolutions = rawFramerateData[identifier];
-    name = identifier;
-    id = identifier;
-    profiles = rawProfiles!
+    final List<Profile> _profiles = rawProfiles!
         .map((e) => Profile(
             label: e.values.toList()[1],
             id: "${e.values.toList()[0]}${e.values.toList()[1]}",
             codecLabel: e.values.toList()[0]))
         .toList();
+    List<Codec> _dublicatedCodecs = _profiles
+        .map((e) => Codec(
+            id: e.codecLabel,
+            label: e.codecLabel,
+            profiles: _profiles
+                .where((element) => element.codecLabel == e.codecLabel)
+                .toList()))
+        .toList();
+    List<Codec> _codecs = [];
+    Profile? pp;
+    for (Profile p in _profiles) {
+      if (_codecs.where((element) => element.label == p.codecLabel).isEmpty) {
+        _codecs.add(Codec(
+            label: p.codecLabel,
+            profiles: _profiles
+                .where((element) => element.codecLabel == p.codecLabel)
+                .toList(),
+            id: p.codecLabel));
+      }
+    }
+
+    name = identifier;
+    id = identifier;
+    codecs = _codecs.toList();
     resolutions = rawResolutions!
         .map((e) => Resolution(
             framerates: frameratesFromString(e["project frame rates"]!),
@@ -141,30 +163,72 @@ class Selection {
   Camera? camera;
   Profile? profile;
   Resolution? resolution;
+  Codec? codec;
   Framerate? framerate;
   Media? media;
   Selection() {
     camera = null;
+    codec = null;
     profile = null;
     resolution = null;
     framerate = null;
     media = medias[0];
   }
 
-  double? dataRate() {
+  double? get dataRate {
     //MB/s
     String? string = rawDatarates[camera?.id]?.firstWhereOrNull((element) =>
         element["Profile"] == profile?.label &&
         element["Format"] == profile?.codecLabel)?[resolution?.id];
-    return string == null ? null : double.parse(string) * 0.125;
+    return (camera == null || profile == null || resolution == null)
+        ? null
+        : string == null
+            ? -1
+            : double.parse(string) * 0.125;
   }
 
-  double? recordingTimeSeconds() {
-    if (media == null || dataRate() == null) {
-      return null;
+  String get dataRateGbh {
+    return dataRate != null
+        ? dataRate == -1
+            ? "not supported"
+            : ((dataRate! / 1000) * 60).toStringAsFixed(1)
+        : "-";
+  }
+
+  String get dataRateMbits {
+    return dataRate != null
+        ? dataRate == -1
+            ? "not supported"
+            : (dataRate! * 8).toStringAsFixed(0)
+        : "-";
+  }
+
+  String get frameRateString {
+    return resolution != null
+        ? "${resolution!.framerates.first.label} - ${resolution!.framerates.last.label}"
+        : "-";
+  }
+
+  String get recordingTime {
+    if (media == null || dataRate == null) {
+      return "-";
+    } else if (dataRate == -1) {
+      return "not supported";
     } else {
-      return media!.size / dataRate()!;
+      return formatedTime(time: (media!.size / dataRate!).toInt());
     }
+  }
+
+  String get imageSize {
+    return resolution != null
+        ? "${resolution!.width} x ${resolution!.height} mm"
+        : "unavailable";
+  }
+
+  String get cropFactor {
+    return resolution != null
+        ? "x${((1 - ((resolution!.width * resolution!.height) / (35.9 * 24.0))) + 1).toStringAsFixed(1)}"
+        : "unavailable";
   }
 
   Widget getRecordingTimeString() {
@@ -175,38 +239,62 @@ class Selection {
         media == null) {
       return Text("Please input info first...");
     } else {
-      return recordingTimeSeconds() != null
-          ? Column(
-              children: [
-                Text(
-                  formatedTime(time: recordingTimeSeconds()!.toInt()),
-                  style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic),
-                ),
-                Text(
-                  "minutes of recording",
-                  textAlign: TextAlign.center,
-                  style: textStyle,
-                )
-              ],
-            )
-          : Text(
-              "Not available",
-              textAlign: TextAlign.center,
-              style: textStyle,
-            );
+      return Column(
+        children: [
+          Text(
+            recordingTime,
+            style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic),
+          ),
+          Text(
+            "minutes of recording",
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )
+        ],
+      );
     }
+  }
+}
+
+class DataListTile extends StatelessWidget {
+  final String leading;
+  final String trailing;
+  const DataListTile(
+      {required this.leading, required this.trailing, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 400,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(leading),
+            Text(
+              trailing,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
 String formatedTime({required int time}) {
   int sec = time % 60;
-  int min = (time / 60).floor();
-  String minute = min.toString().length <= 1 ? "0$min" : "$min";
+  int h = (time / 3600).floor();
+  int min = ((time / 60) - (h * 60)).floor();
+
+  String hour = h.toString().length <= 1 ? "0$h" : "$h";
+  String minute = (min.toString().length) <= 1 ? "0$min" : "$min";
   String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
-  return "$minute:$second";
+  return "$hour:$minute:$second";
 }
 
 class MyHomePage extends StatefulWidget {
@@ -238,129 +326,228 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
         appBar: AppBar(
-          title: Text("Sony Camera Recording Time"),
+          title: Text(
+            "Sony Data Rate Calculator",
+            style: TextStyle(color: Colors.white),
+          ),
           // TRY THIS: Try changing the color here to a specific color (to
           // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
           // change color while the other colors stay the same.
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Colors.black,
           // Here we take the value from the MyHomePage object that was created by
           // the App.build method, and use it to set our appbar title.
         ),
         body: ListView(
           children: [
-            DropdownButtonHideUnderline(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DropdownButton<Camera>(
-                        value: _selection.camera,
-                        hint: Text("Camera"),
-                        items: cameras
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.name),
-                                ))
-                            .toList(),
-                        onChanged: (e) => setState(() {
-                              _selection.camera = e;
-                            })),
-                    DropdownButton<Profile>(
-                        value: _selection.profile,
-                        hint: Text("Codec Profile"),
-                        items: _selection.camera?.profiles
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e.label),
-                                ))
-                            .toList(),
-                        onChanged: (e) => setState(() {
-                              _selection.profile = e;
-                            })),
-                    DropdownButton<Resolution>(
-                        hint: Text("Imager Mode"),
-                        value: _selection.resolution,
-                        items: _selection.camera?.resolutions
-                            .map((e) => DropdownMenuItem(
-                                value: e, child: Text(e.label)))
-                            .toList(),
-                        onChanged: (e) => setState(() {
-                              _selection.resolution = e;
-                            })),
-                    DropdownButton<Media>(
-                        hint: Text("Media Size"),
-                        value: _selection.media,
-                        items: medias
-                            .map((e) => DropdownMenuItem(
-                                value: e, child: Text(e.label)))
-                            .toList(),
-                        onChanged: (e) => setState(() {
-                              _selection.media = e;
-                            })),
-                  ],
+            Center(
+              child: Container(
+                width: 400,
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Camera Settings",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: DropdownButtonHideUnderline(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                DropdownButton<Camera>(
+                                    value: _selection.camera,
+                                    hint: Text("Camera"),
+                                    items: cameras
+                                        .map((e) => DropdownMenuItem(
+                                              value: e,
+                                              child: Text(e.name),
+                                            ))
+                                        .toList(),
+                                    onChanged: (e) => setState(() {
+                                          _selection.camera = e;
+                                        })),
+                                DropdownButton<Codec>(
+                                    value: _selection.camera?.codecs
+                                                .contains(_selection.codec) ??
+                                            false
+                                        ? _selection.codec
+                                        : null,
+                                    hint: Text("Codec"),
+                                    items: _selection.camera?.codecs
+                                        .map((e) => DropdownMenuItem(
+                                              value: e,
+                                              child: Text(e.label),
+                                            ))
+                                        .toList(),
+                                    onChanged: (e) => setState(() {
+                                          _selection.codec = e;
+                                        })),
+                                DropdownButton<Profile>(
+                                    value: _selection.codec?.profiles
+                                                .contains(_selection.profile) ??
+                                            false
+                                        ? _selection.profile
+                                        : null,
+                                    hint: Text("Codec Profile"),
+                                    items: _selection.codec?.profiles
+                                        .map((e) => DropdownMenuItem(
+                                              value: e,
+                                              child: Text(e.label),
+                                            ))
+                                        .toList(),
+                                    onChanged: (e) => setState(() {
+                                          _selection.profile = e;
+                                        })),
+                                DropdownButton<Resolution>(
+                                    hint: Text("Imager Mode"),
+                                    value: _selection.camera?.resolutions
+                                                .contains(
+                                                    _selection.resolution) ??
+                                            false
+                                        ? _selection.resolution
+                                        : null,
+                                    items: _selection.camera?.resolutions
+                                        .map((e) => DropdownMenuItem(
+                                            value: e, child: Text(e.label)))
+                                        .toList(),
+                                    onChanged: (e) => setState(() {
+                                          _selection.resolution = e;
+                                        })),
+                                DropdownButton<Media>(
+                                    hint: Text("Media Size"),
+                                    value: _selection.media,
+                                    items: medias
+                                        .map((e) => DropdownMenuItem(
+                                            value: e, child: Text(e.label)))
+                                        .toList(),
+                                    onChanged: (e) => setState(() {
+                                          _selection.media = e;
+                                        })),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
             SizedBox(
               height: 20,
             ),
-            Column(
+            /*Column(
               children: [_selection.getRecordingTimeString()],
+            ),*/
+            Center(
+              child: Container(
+                width: 400,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Results",
+                      style:
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    DataListTile(
+                        leading: "Recording Time (hh:mm:ss)",
+                        trailing: _selection.recordingTime),
+                    DataListTile(
+                        leading: "Data Rate (GB/h)",
+                        trailing: (_selection.dataRateGbh)),
+                    DataListTile(
+                        leading: "Data Rate (Mbit/s)",
+                        trailing: (_selection.dataRateMbits)),
+                    DataListTile(
+                        leading: "Frame Rates",
+                        trailing: _selection.frameRateString)
+                  ],
+                ),
+              ),
             ),
             SizedBox(
               height: 30,
             ),
             _selection.resolution != null
                 ? Center(
-                    child: Container(
-                    height: 270,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 359,
-                          height: 240,
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: Center(
-                                  child: Container(
-                                    height: 240,
-                                    width: 359,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.blue, width: 2),
-                                        borderRadius: BorderRadius.circular(5)),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Format Preview",
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 7,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 400,
+                            height: 267,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Center(
+                                    child: Container(
+                                      height: 267,
+                                      width: 400,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.blueGrey, width: 2),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Center(
-                                child: Center(
-                                  child: Container(
-                                      height:
-                                          _selection.resolution!.height * 10,
-                                      width: _selection.resolution!.width * 10,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          border: Border.all(
-                                              color:
-                                                  Color.fromARGB(255, 0, 0, 0),
-                                              width: 2),
-                                          color: Color.fromARGB(78, 0, 0, 0))),
+                                Center(
+                                  child: Center(
+                                    child: Container(
+                                        height: _selection.resolution!.height *
+                                            10 *
+                                            1.114206128,
+                                        width: _selection.resolution!.width *
+                                            10 *
+                                            1.114206128,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 0, 0, 0),
+                                                width: 2),
+                                            color:
+                                                Color.fromARGB(78, 0, 0, 0))),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text("Sensor readout")
-                      ],
-                    ),
+                        ],
+                      ),
+                      DataListTile(
+                          leading: "Image Area Size",
+                          trailing: _selection.imageSize),
+                      DataListTile(
+                          leading: "Crop Factor",
+                          trailing: _selection.cropFactor)
+                    ],
                   ))
                 : SizedBox(),
           ],
