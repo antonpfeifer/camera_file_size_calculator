@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Camera Recording Time',
+      title: 'Sony CineAlta Data Rate Calculator',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
@@ -318,50 +318,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Sony Data Rate Calculator",
-            style: TextStyle(color: Colors.white),
-          ),
-          // TRY THIS: Try changing the color here to a specific color (to
-          // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-          // change color while the other colors stay the same.
-          backgroundColor: Colors.black,
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-        ),
-        body: ListView(
-          children: [
-            Center(
-              child: Container(
-                width: 400,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Camera Settings",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: DropdownButtonHideUnderline(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+    List<Widget> settings = [
                                 DropdownButton<Camera>(
                                     value: _selection.camera,
                                     hint: Text("Camera"),
@@ -431,7 +388,51 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onChanged: (e) => setState(() {
                                           _selection.media = e;
                                         })),
-                              ],
+                              ];
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Sony CineAlta Data Rate Calculator",
+            style: TextStyle(color: Colors.white),
+          ),
+          // TRY THIS: Try changing the color here to a specific color (to
+          // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+          // change color while the other colors stay the same.
+          backgroundColor: Colors.black,
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+        ),
+        body: ListView(
+          children: [
+            Center(
+              child: Container(
+                width: 400,
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(13.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Camera Settings",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: DropdownButtonHideUnderline(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: settings.map((e) => Row(children: [e.],)).toList()
                             ),
                           ),
                         ),
@@ -550,6 +551,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ))
                 : SizedBox(),
+                SizedBox(height: 10,),
+                Text("Note: Current firmware (V2.10) required to access all features")
           ],
         ));
   }
